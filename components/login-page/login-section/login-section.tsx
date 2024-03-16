@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import Logo from "@/assets/images/logo/main-logo.png";
+import { SolidBtn } from "@/components/elements";
+import { FaGoogle } from "react-icons/fa";
 
 const LoginSection = () => {
 	return (
@@ -18,6 +20,14 @@ const LoginSection = () => {
 				Get all of the information in your language via automatic
 				translation by AI
 			</h1>
+
+			<SolidBtn
+				title="Continue with Google"
+				className="w-fit px-4 py-1.5 mt-8 rounded-md"
+				titleClassName="text-xl"
+				LeftIcon={FaGoogle}
+				leftIconClassName="mr-3"
+			/>
 		</div>
 	);
 };
