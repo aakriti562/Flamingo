@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { upsertUser } from "@/services/database/user";
+import { getUserByEmail, upsertUser } from "@/services/database/user";
+import { connectToDB } from "@/db";
 
 export const {
 	auth,
@@ -17,7 +18,9 @@ export const {
 			try {
 				if (!profile) throw new Error("No profile received!!");
 
-				const dbUser = await upsertUser({
+				await connectToDB();
+
+				await upsertUser({
 					name: profile.name ?? "",
 					email: profile.email ?? "",
 					provider_id: profile.sub ?? "",
@@ -33,11 +36,22 @@ export const {
 			}
 		},
 		session: async ({ session, token, user }) => {
-			// session.userId =
+			try {
+				await connectToDB();
 
-			console.log(token.sub);
+				const user = await getUserByEmail(session.user.email);
 
-			return session;
+				if (!user) throw new Error("No such user found!!");
+
+				session.user.id = user._id.toString();
+
+				return session;
+			} catch (error) {
+				if (error instanceof Error) console.log(error.message);
+				else console.log(error);
+
+				return session;
+			}
 		},
 	},
 	secret: process.env["AUTH_JWT_SECRET"],
