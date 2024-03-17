@@ -5,6 +5,7 @@ import {
 	ReactQueryProvider,
 	RecoilProvider,
 } from "@/components/providers";
+import { PrevAuthLoader, UserManager } from "@/components/common";
 
 export const metadata: Metadata = {
 	title: "Flamingo",
@@ -21,7 +22,11 @@ export default function RootLayout({
 			<body>
 				<NextAuthProvider>
 					<ReactQueryProvider>
-						<RecoilProvider>{children}</RecoilProvider>
+						<RecoilProvider>
+							<PrevAuthLoader />
+							<UserManager />
+							{children}
+						</RecoilProvider>
 					</ReactQueryProvider>
 				</NextAuthProvider>
 			</body>

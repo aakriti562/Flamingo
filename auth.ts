@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { upsertUser } from "@/services/database/user";
 
 export const {
 	auth,
@@ -13,16 +12,24 @@ export const {
 		}),
 	],
 	callbacks: {
-		signIn: async ({ user, account, profile }) => {
+		signIn: async ({ profile }) => {
 			try {
 				if (!profile) throw new Error("No profile received!!");
 
-				const dbUser = await upsertUser({
-					name: profile.name ?? "",
-					email: profile.email ?? "",
-					provider_id: profile.sub ?? "",
-					image: profile.picture ?? "",
+				const res = await fetch("http://localhost:3000/api/user", {
+					method: "POST",
+					headers: {
+						"content-type": "application/json",
+					},
+					body: JSON.stringify({
+						name: profile.name,
+						email: profile.email,
+						provider_id: profile.sub,
+						image: profile.picture,
+					}),
 				});
+
+				await res.json();
 
 				return true;
 			} catch (error) {
@@ -31,13 +38,6 @@ export const {
 				console.log(error);
 				return false;
 			}
-		},
-		session: async ({ session, token, user }) => {
-			// session.userId =
-
-			console.log(token.sub);
-
-			return session;
 		},
 	},
 	secret: process.env["AUTH_JWT_SECRET"],
