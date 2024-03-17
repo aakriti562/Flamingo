@@ -1,11 +1,16 @@
 import { isAuthenticatedAtom } from "@/atoms";
 import { appLoadAtom } from "@/atoms/app-load-atom";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 
 export const usePrevAuthLoader = () => {
-	const setAppLoadState = useSetRecoilState<boolean>(appLoadAtom);
-	const setIsAuthenticated = useSetRecoilState<boolean>(isAuthenticatedAtom);
+	const [appLoadState, setAppLoadState] =
+		useRecoilState<boolean>(appLoadAtom);
+	const [isAuthenticated, setIsAuthenticated] =
+		useRecoilState<boolean>(isAuthenticatedAtom);
+	const pathname = usePathname();
+	const router = useRouter();
 
 	const appMounted = useRef<boolean>(false);
 
@@ -49,6 +54,16 @@ export const usePrevAuthLoader = () => {
 		appMounted.current = true;
 		checkPreviouslyAuthenticated();
 	}, []);
+
+	useEffect(() => {
+		if (appLoadAtom) {
+			if (pathname === "/" || pathname === "/login") {
+				if (isAuthenticated) router.replace("/feed");
+			} else {
+				if (!isAuthenticated) router.replace("/login");
+			}
+		}
+	}, [appLoadState, isAuthenticated]);
 
 	return {};
 };
