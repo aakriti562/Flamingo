@@ -23,8 +23,6 @@ export const useUserManager = () => {
 
 			const data = await response.json();
 
-			console.log(data.data.user);
-
 			setUser(data.data.user);
 		} catch (error) {
 			console.log(error);
@@ -38,4 +36,6 @@ export const useUserManager = () => {
 			getUserProfile();
 		}
 	}, [isAuthenticated]);
+
+	return {};
 };

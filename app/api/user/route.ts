@@ -20,6 +20,8 @@ export const GET = APIHandler<GETResponseBody>(async (request) => {
 	if (!session || !session.user || !session.user.email)
 		throw new APIError("Access denied!!", 401);
 
+	await connectToDB();
+
 	const user = await getUser(session.user.email);
 
 	if (!user) throw new APIError("No user found!!", 404);
